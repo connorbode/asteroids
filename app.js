@@ -1,10 +1,32 @@
 
 var canvas = d3.select('svg');
 
-canvas.append('polygon')
-  .attr('points', '0,10 0,-10 25,0')
-  .style('stroke', '#000')
-  .style('fill', '#000');
+var Ship = function () {
+  this.rotation = 0,  // rotation from horizontal (following coordinate plane)
+  this.velocityX = 0, // increase in x per redraw interval
+  this.velocityY = 0, // increase in y per redraw interval
+  this.x = 0,         // x coordinate
+  this.y = 0          // y coordinate
+
+  this.svg = canvas.append('polygon')
+    .attr('points', '-10,-10 -10,10 15,0')
+    .attr('transform', 'translate(100,100)')
+    .style('stroke', '#000')
+    .style('fill', '#000');
+};
+
+//
+// Draw the ship on the canvas
+//
+// This is executed every
+//
+Ship.prototype.draw = function () {
+  var transformStr;
+  this.x += this.velocityX;
+  this.y += this.velocityY;
+  transformStr = 'translate(' + this.x + ',' + this.y + ')';
+  this.svg.attr('tranform', transformStr);
+};
 
 //
 // Handle the left key being pressed
@@ -57,4 +79,6 @@ var handleKeyDown = function (e) {
   }
 };
 
+var ship = new Ship();
 window.addEventListener('keydown', handleKeyDown);
+setInterval(ship.draw.bind(ship), 100);
