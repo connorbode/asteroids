@@ -1,4 +1,4 @@
-
+var ROTATION_INTERVAL = 100;
 var canvas = d3.select('svg');
 
 var Ship = function () {
@@ -13,6 +13,15 @@ var Ship = function () {
     .attr('transform', 'translate(100,100)')
     .style('stroke', '#000')
     .style('fill', '#000');
+
+  var rotationInterval;
+  this.startRotatingLeft = function () {
+    rotationInterval = setInterval(function () {
+      this.rotation += 1;
+      if (this.rotation > 359) this.rotation = 0;
+      this.draw();
+    }.bind(this), ROTATION_INTERVAL);
+  };
 };
 
 //
@@ -24,15 +33,36 @@ Ship.prototype.draw = function () {
   var transformStr;
   this.x += this.velocityX;
   this.y += this.velocityY;
-  transformStr = 'translate(' + this.x + ',' + this.y + ')';
+  transformStr = 'translate(' + this.x + ',' + this.y + ') rotate(' + this.rotation + 'deg)';
   this.svg.attr('tranform', transformStr);
+};
+
+//
+// Increases the velocity of the ship
+//
+Ship.prototype.increaseVelocity = function () {
+  
+};
+
+//
+// Decreases the velocity of the ship
+//
+Ship.prototype.decreaseVelocity = function () {
+
 };
 
 //
 // Handle the left key being pressed
 //
 var handleLeftKeyDown = function () {
+  ship.startRotatingLeft();
+};
 
+//
+// Handle the left key being released
+//
+var handleLeftKeyUp = function () {
+  ship.stopRotatingLeft();
 };
 
 //
@@ -79,6 +109,30 @@ var handleKeyDown = function (e) {
   }
 };
 
+//
+// Handle keys being released
+//
+var handleKeyUp = function (e) {
+  switch (e.keyCode) {
+    case 37:
+      handleLeftKeyUp();
+      break;
+
+    case 38:
+      handleUpKeyUp();
+      break;
+
+    case 39:
+      handleRightKeyUp();
+      break;
+
+    case 40:
+      handleDownKeyUp();
+      break;
+  }
+};
+
 var ship = new Ship();
 window.addEventListener('keydown', handleKeyDown);
+window.addEventListener('keyup', handleKeyUp);
 setInterval(ship.draw.bind(ship), 100);
